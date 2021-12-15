@@ -11,7 +11,7 @@ from PyQt5.QtQuick import QQuickImageProvider
 from PyQt5.QtWidgets import QApplication, QDialog, QProgressDialog, QPlainTextEdit, QMessageBox
 from PyQt5.QtQml import QQmlApplicationEngine
 from mlox.resources import resource_manager
-from mlox.loadOrder import loadorder
+from mlox.loadOrder import get_load_order
 from mlox import version
 
 gui_logger = logging.getLogger('mlox.gui')
@@ -210,7 +210,9 @@ class MloxGui(QObject):
         self.Msg = ""
 
         gui_logger.info("Version: %s\t\t\t\t %s " % (version.full_version(), "Hello!"))
-        self.lo = loadorder()
+
+
+        self.lo = get_load_order()
         if fromfile != None:
             self.lo.read_from_file(fromfile)
         else:

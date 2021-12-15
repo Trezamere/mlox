@@ -21,7 +21,7 @@ from colorama import Fore, Style
 from mlox.resources import user_path, update_file, UPDATE_URL
 from mlox.update import update_compressed_file
 from mlox import version
-from mlox.loadOrder import loadorder
+from mlox.loadOrder import get_load_order
 from mlox.translations import dump_translations, _
 
 
@@ -82,7 +82,7 @@ class ListVersions(argparse.Action):
         super().__init__(option_strings=option_strings, dest=dest, default=default, nargs=0, help=self.help)
 
     def __call__(self, parser, namespace, values, option_string=None):
-        my_loadorder = loadorder()
+        my_loadorder = get_load_order()
         my_loadorder.get_data_files()
         print(my_loadorder.listversions())
         parser.exit()
@@ -151,8 +151,9 @@ def build_parser() -> argparse.ArgumentParser:
                 (mlox_base.txt and mlox_user.txt, if it exists). A copy of the
                 newly generated load order is saved in mlox_loadorder.out.
 
-                Note: if you use Wrye Mash's "lock times" feature and you want mlox to update your load order, you need to run Mash first and turn it off.
-                Otherwise, the next time you run Mash, it will undo all the changes in your load order made by mlox.
+                Note: if you use Wrye Mash's "lock times" feature and you want mlox to update your load order, you need 
+                to run Mash first and turn it off. Otherwise, the next time you run Mash, it will undo all the changes 
+                in your load order made by mlox.
                 """))
 
     parser.add_argument("-n", "--nodownload", help="Do not automatically download and update the mlox rules.",
@@ -161,13 +162,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-a", "--all",
                         help=single_spaced("""
                             Handle for all plugins in the Data Directory.
-                            Default is to only process active plugins (plugins in the Data directory, and also in Morrowind.ini.)
+                            Default is to only process active plugins (plugins in the Data directory, and also in 
+                            Morrowind.ini.)
                             """),
                         action="store_true")
     parser.add_argument("-f", "--fromfile",
                         help=single_spaced("""File processing mode.
                             At least one input file must follow on command line.
-                            Each file contains a list of plugins which is used instead of reading the list of plugins from the data file directory.
+                            Each file contains a list of plugins which is used instead of reading the list of plugins 
+                            from the data file directory.
                             File formats accepted: Morrowind.ini, load order output of Wrye Mash, and Reorder Mods++.
                             """),
                         metavar='file',
@@ -183,7 +186,8 @@ def build_parser() -> argparse.ArgumentParser:
                         nargs=1,
                         type=str)
     parser.add_argument("--base-only",
-                        help="Use this with the --explain option to exclude the current load order from the graph explanation.",
+                        help="Use this with the --explain option to exclude the current load order from the graph "
+                             "explanation.",
                         action="store_true")
     parser.add_argument("--gui",
                         help="Run the GUI.\nDefault action if no arguments are given.",
@@ -199,11 +203,11 @@ def command_line_mode(args):
     logging.info("%s %s", version.full_version(), _["Hello!"])
     if args.fromfile:
         for fromfile in args.fromfile:
-            my_loadorder = loadorder()
+            my_loadorder = get_load_order()
             my_loadorder.read_from_file(fromfile)
             process_load_order(my_loadorder, args)
         return
-    my_loadorder = loadorder()
+    my_loadorder = get_load_order()
     if args.all:
         my_loadorder.get_data_files()
     else:

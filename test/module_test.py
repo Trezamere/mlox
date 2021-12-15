@@ -241,12 +241,12 @@ class LoadOrderTest(unittest.TestCase):
     Test mlox mlox.loadOrder
     TODO: Actually test anything here
     """
-    from mlox.loadOrder import loadorder
+    from mlox.loadOrder import MorrowindLoadOrder
     import mlox.fileFinder as fileFinder
 
     @mark.skip('Unimplemented')
     def test_File_and_Dir(self):
-        l1 = self.loadorder()
+        l1 = self.MorrowindLoadOrder()
         l1.datadir = "./test1.data/"
         l1.plugin_file = "./userfiles/abot.txt"
         l1.game_type = None
@@ -256,14 +256,14 @@ class LoadOrderTest(unittest.TestCase):
 
     @mark.skip('Unimplemented')
     def test_Dir(self):
-        l2 = self.loadorder()
+        l2 = self.MorrowindLoadOrder()
         l2.datadir = "./test1.data/"
         l2.get_data_files()
         l2.update()
 
     @mark.skip('Unimplemented')
     def test_File(self):
-        l3 = self.loadorder()
+        l3 = self.MorrowindLoadOrder()
         l3.read_from_file("./userfiles/abot.txt")
         l3.update()
         print(l3.explain("Morrowind.esm"))

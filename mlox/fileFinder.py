@@ -86,6 +86,7 @@ class caseless_dirlist:
     def filelist(self):
         return self.files.values()
 
+
 def _find_appdata():
     """a somewhat hacky function for finding where Oblivion's Application Data lives.
     Hopefully works under Windows, Wine, and native Linux."""
@@ -98,25 +99,24 @@ def _find_appdata():
         re_appdata = re.compile(r'"LOCALAPPDATA"="([^"]+)"', re.IGNORECASE)
         regdir = caseless_dirlist().find_parent_dir("system.reg")
         if regdir == None:
-            return(None)
+            return None
         regpath = regdir.find_path("system.reg")
-        if regpath == None:
-            return(None)
+        if regpath is None:
+            return None
         try:
-            inp = open(regpath, 'r')
-            for line in inp:
-                match = re_appdata.match(line)
-                if match:
-                    path = match.group(1)
-                    path = path.split(r'\\')
-                    drive = "drive_" + path.pop(0).lower()[0]
-                    appdata = "/".join([regdir.dirpath(), drive, "/".join(path)])
-                    inp.close()
-                    return(appdata)
-            inp.close()
+            with open(regpath, 'r') as inp:
+                for line in inp:
+                    match = re_appdata.match(line)
+                    if match:
+                        path = match.group(1)
+                        path = path.split(r'\\')
+                        drive = "drive_" + path.pop(0).lower()[0]
+                        appdata = "/".join([regdir.dirpath(), drive, "/".join(path)])
+                        inp.close()
+                        return(appdata)
         except IOError:
             pass
-        return(None)
+        return None
     # Windows
     try:
         import winreg
@@ -133,6 +133,7 @@ def _find_appdata():
         return(os.path.expandvars(appdata))
     except ImportError:
         return None
+
 
 def _get_Oblivion_plugins_file():
     appdata = _find_appdata()
@@ -153,21 +154,27 @@ def find_game_dirs():
 
     cwd = caseless_dirlist() # start our search in our current directory
     gamedir = cwd.find_parent_dir("Morrowind.ini")
-    if gamedir != None:
+    if gamedir is not None:
         game = "Morrowind"
         list_file = gamedir.find_path("Morrowind.ini")
         datadir = gamedir.find_path("Data Files")
     else:
-        gamedir = cwd.find_parent_dir("Oblivion.ini")
-        if gamedir != None:
-            game = "Oblivion"
-            list_file = _get_Oblivion_plugins_file()
-            datadir = gamedir.find_path("Data")
+        gamedir = cwd.find_parent_dir("openmw.cfg")
+        if gamedir is not None:
+            game = "OpenMW"
+            list_file = gamedir.find_path("openmw.cfg")
+            datadir = gamedir.find_path("Data Files")
         else:
-            # Not running under a game directory, so we're probably testing
-            # assume plugins live in current directory.
-            datadir = os.path.abspath("..")
+            gamedir = cwd.find_parent_dir("Oblivion.ini")
+            if gamedir is not None:
+                game = "Oblivion"
+                list_file = _get_Oblivion_plugins_file()
+                datadir = gamedir.find_path("Data")
+            else:
+                # Not running under a game directory, so we're probably testing
+                # assume plugins live in current directory.
+                datadir = os.path.abspath("..")
     file_logger.debug("Found Game:  {0}".format(game))
     file_logger.debug("Plugins file at:  {0}".format(list_file))
     file_logger.debug("Data Files at: {0}".format(datadir))
-    return (game,list_file,datadir)
+    return game, list_file, datadir
