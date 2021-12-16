@@ -393,4 +393,18 @@ class OpenMWLoadOrder(LoadOrder):
         return parser.get_messages()
 
     def write_new_order(self):
-        raise NotImplementedError
+        """Write/save the new order to the directory and config file."""
+        if not isinstance(self.new_order, list) or self.new_order == []:
+            order_logger.error("Not saving blank load order.")
+            return False
+        if self.datadir:
+            if configHandler.dataDirHandler(self.datadir).write(self.new_order):
+                self.is_sorted = True
+        if isinstance(self.plugin_file, str):
+            if configHandler.configHandler(self.plugin_file, self.game_type).write(self.new_order):
+                self.is_sorted = True
+
+        if not self.is_sorted:
+            order_logger.error("Unable to save new load order.")
+            return False
+        return True

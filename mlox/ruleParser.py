@@ -16,7 +16,7 @@ re_rule = re.compile(r'^\[(version|order|nearend|nearstart|conflict|note|patch|r
 # line for multiline messages
 re_message = re.compile(r'^\s')
 # pattern used to match a string that should only contain a plugin name, no slop
-re_plugin = re.compile(r'^(\S.*?\.es[mp]\b)([\s]*)', re.IGNORECASE)
+re_plugin = re.compile(r'^(\S.*?\.(?:es[mp]|omwaddon)\b)([\s]*)', re.IGNORECASE)
 # metacharacters for filename expansion
 re_plugin_meta = re.compile(r'([*?])')
 re_plugin_metaver = re.compile(r'(<VER>)', re.IGNORECASE)

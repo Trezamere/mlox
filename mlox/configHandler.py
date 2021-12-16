@@ -188,23 +188,23 @@ class configHandler():
         # of a given header, say content=, purge the existing entries in the file, then start inserting the sorted
         # plugins starting at the occurence we first captured.
         try:
-            with open(self.configFile, 'rw') as file_handle:
+            with open(self.configFile, 'r') as file_handle:
                 file_buffer = file_handle.read()
-                for plugin in list_of_plugins:
-                    # add a newline if necessary
-                    if plugin[-1] != "\n":
-                        plugin = plugin + "\n"
 
-                    # capture the first occurrence of the key header in the file
-                    i = file_buffer.index("content=")
+            # capture the first occurrence of the key header in the file
+            i = file_buffer.index("content=")
 
-                    # strip all the existing instances of the header
-                    file_buffer = re.sub(r"^content=.*$", "", file_buffer, flags=re.MULTILINE | re.IGNORECASE)
+            # strip all the existing instances of the header
+            file_buffer = re.sub(r"^content=.*$", "", file_buffer, flags=re.MULTILINE | re.IGNORECASE).strip()
 
-                    # insert the ordered list into the file starting at the first occurrence above, i
-                    file_buffer = file_buffer[:i] + plugin + file_buffer[i:]
-                    i = i + len(plugin)  # update the index to the next line
+            for plugin in list_of_plugins:
+                content_line = "\ncontent=" + plugin
 
+                # insert the ordered list into the file starting at the first occurrence above, i
+                file_buffer = file_buffer[:i] + content_line + file_buffer[i:]
+                i = i + len(content_line)  # update the index to the next line
+
+            with open(self.configFile, 'w') as file_handle:
                 file_handle.write(file_buffer)
         except IOError:
             config_logger.error("Unable to open configuration file: {0}".format(self.configFile))
